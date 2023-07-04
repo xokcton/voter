@@ -1,12 +1,17 @@
-import { createPollID, createUserID } from 'src/utils/ids';
+import { Poll } from 'shared';
+import { createPollID, createUserID, createNominationID } from 'src/utils/ids';
 import { JwtService } from '@nestjs/jwt/dist';
 import {
+  AddNominationFields,
+  AddParticipantFields,
   CreatePollFields,
   JoinPollFields,
   RejoinPollFields,
+  SubmitRankingsFields,
 } from './polls.types';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { PollsRepository } from './polls.repository';
+import getResults from '../utils/getResults';
 
 @Injectable()
 export class PollsService {
@@ -84,5 +89,96 @@ export class PollsService {
     const joinedPoll = await this.pollsRepository.addParticipant(fields);
 
     return joinedPoll;
+  }
+
+  async addParticipant(addParticipant: AddParticipantFields): Promise<Poll> {
+    const updatedPoll = await this.pollsRepository.addParticipant(
+      addParticipant,
+    );
+    return updatedPoll;
+  }
+
+  async removeParticipant(
+    pollID: string,
+    userID: string,
+  ): Promise<Poll | void> {
+    const poll = await this.pollsRepository.getPoll(pollID);
+
+    if (!poll.hasStarted) {
+      const updatedPoll = await this.pollsRepository.removeParticipant(
+        pollID,
+        userID,
+      );
+      return updatedPoll;
+    }
+  }
+
+  async getPoll(pollID: string): Promise<Poll> {
+    const poll = await this.pollsRepository.getPoll(pollID);
+    return poll;
+  }
+
+  async addNomination({
+    pollID,
+    userID,
+    text,
+  }: AddNominationFields): Promise<Poll> {
+    const updatedPoll = await this.pollsRepository.addNomination({
+      pollID,
+      nominationID: createNominationID(),
+      nomination: {
+        userID,
+        text,
+      },
+    });
+
+    return updatedPoll;
+  }
+
+  async removeNomination(pollID: string, nominationID: string): Promise<Poll> {
+    const updatedPoll = await this.pollsRepository.removeNomination(
+      pollID,
+      nominationID,
+    );
+
+    return updatedPoll;
+  }
+
+  async startPoll(pollID: string): Promise<Poll> {
+    const updatedPoll = await this.pollsRepository.startPoll(pollID);
+
+    return updatedPoll;
+  }
+
+  async submitRankings(rankingsData: SubmitRankingsFields): Promise<Poll> {
+    const hasPollStarted = this.pollsRepository.getPoll(rankingsData.pollID);
+
+    if (!hasPollStarted) {
+      throw new BadRequestException(
+        'Participants cannot rank until the poll has started.',
+      );
+    }
+
+    const updatedPoll = await this.pollsRepository.addParticipantRankings(
+      rankingsData,
+    );
+
+    return updatedPoll;
+  }
+
+  async computeResults(pollID: string): Promise<Poll> {
+    const poll = await this.pollsRepository.getPoll(pollID);
+    const results = getResults(
+      poll.rankings,
+      poll.nominations,
+      poll.votesPerVoter,
+    );
+    const updatedPoll = await this.pollsRepository.addResults(pollID, results);
+
+    return updatedPoll;
+  }
+
+  async cancelPoll(pollID: string): Promise<void> {
+    await this.pollsRepository.deletePoll(pollID);
   }
 }

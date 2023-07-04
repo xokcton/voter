@@ -5,6 +5,7 @@ import { ServerOptions, Server } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
 import { SocketWithAuth } from './polls/polls.types';
 import { NextFunction } from 'express';
+import { POLLS } from 'shared';
 
 export class SocketIOAdapter extends IoAdapter {
   private readonly logger = new Logger(SocketIOAdapter.name);
@@ -38,7 +39,7 @@ export class SocketIOAdapter extends IoAdapter {
     const jwtService = this.app.get(JwtService);
     const server: Server = super.createIOServer(port, optionsWithCORS);
 
-    server.of('polls').use(createTokenMiddleware(jwtService, this.logger));
+    server.of(POLLS).use(createTokenMiddleware(jwtService, this.logger));
 
     return server;
   }

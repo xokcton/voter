@@ -1,0 +1,11 @@
+export const POLL_UPDATED = 'poll_updated';
+export const POLL_CANCELLED = 'poll_cancelled';
+export const REMOVE_PARTICIPANT = 'remove_participant';
+export const EXCEPTION = 'exception';
+export const POLLS = 'polls';
+export const NOMINATE = 'nominate';
+export const REMOVE_NOMINATION = 'remove_nomination';
+export const START_VOTE = 'start_vote';
+export const SUBMIT_RANKINGS = 'submit_rankings';
+export const CLOSE_POLL = 'close_poll';
+export const CANCEL_POLL = 'cancel_poll';
