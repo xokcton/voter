@@ -31,7 +31,7 @@ import {
   REMOVE_PARTICIPANT,
   START_VOTE,
   SUBMIT_RANKINGS,
-} from 'shared';
+} from '../utils/poll-constants';
 import { NominationDto } from './polls.dtos';
 
 @UsePipes(new ValidationPipe())

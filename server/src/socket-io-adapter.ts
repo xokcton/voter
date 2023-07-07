@@ -5,7 +5,7 @@ import { ServerOptions, Server } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
 import { SocketWithAuth } from './polls/polls.types';
 import { NextFunction } from 'express';
-import { POLLS } from 'shared';
+import { POLLS } from './utils/poll-constants';
 
 export class SocketIOAdapter extends IoAdapter {
   private readonly logger = new Logger(SocketIOAdapter.name);

@@ -38,7 +38,7 @@ export class PollsService {
 
     const signedString = this.jwtService.sign(
       {
-        pollId: createdPoll.id,
+        pollID: createdPoll.id,
         name: fields.name,
       },
       {
@@ -67,7 +67,7 @@ export class PollsService {
 
     const signedString = this.jwtService.sign(
       {
-        pollId: joinedPoll.id,
+        pollID: joinedPoll.id,
         name: fields.name,
       },
       {
@@ -92,10 +92,7 @@ export class PollsService {
   }
 
   async addParticipant(addParticipant: AddParticipantFields): Promise<Poll> {
-    const updatedPoll = await this.pollsRepository.addParticipant(
-      addParticipant,
-    );
-    return updatedPoll;
+    return this.pollsRepository.addParticipant(addParticipant);
   }
 
   async removeParticipant(
@@ -114,8 +111,7 @@ export class PollsService {
   }
 
   async getPoll(pollID: string): Promise<Poll> {
-    const poll = await this.pollsRepository.getPoll(pollID);
-    return poll;
+    return this.pollsRepository.getPoll(pollID);
   }
 
   async addNomination({
@@ -123,7 +119,7 @@ export class PollsService {
     userID,
     text,
   }: AddNominationFields): Promise<Poll> {
-    const updatedPoll = await this.pollsRepository.addNomination({
+    return this.pollsRepository.addNomination({
       pollID,
       nominationID: createNominationID(),
       nomination: {
@@ -131,23 +127,14 @@ export class PollsService {
         text,
       },
     });
-
-    return updatedPoll;
   }
 
   async removeNomination(pollID: string, nominationID: string): Promise<Poll> {
-    const updatedPoll = await this.pollsRepository.removeNomination(
-      pollID,
-      nominationID,
-    );
-
-    return updatedPoll;
+    return this.pollsRepository.removeNomination(pollID, nominationID);
   }
 
   async startPoll(pollID: string): Promise<Poll> {
-    const updatedPoll = await this.pollsRepository.startPoll(pollID);
-
-    return updatedPoll;
+    return this.pollsRepository.startPoll(pollID);
   }
 
   async submitRankings(rankingsData: SubmitRankingsFields): Promise<Poll> {
@@ -159,23 +146,19 @@ export class PollsService {
       );
     }
 
-    const updatedPoll = await this.pollsRepository.addParticipantRankings(
-      rankingsData,
-    );
-
-    return updatedPoll;
+    return this.pollsRepository.addParticipantRankings(rankingsData);
   }
 
   async computeResults(pollID: string): Promise<Poll> {
     const poll = await this.pollsRepository.getPoll(pollID);
+
     const results = getResults(
       poll.rankings,
       poll.nominations,
       poll.votesPerVoter,
     );
-    const updatedPoll = await this.pollsRepository.addResults(pollID, results);
 
-    return updatedPoll;
+    return this.pollsRepository.addResults(pollID, results);
   }
 
   async cancelPoll(pollID: string): Promise<void> {

@@ -10,7 +10,7 @@ import {
   WsTypeException,
   WsUnknownException,
 } from './ws-exceptions';
-import { EXCEPTION } from 'shared';
+import { EXCEPTION } from '../utils/poll-constants';
 
 @Catch()
 export class WsCatchAllFilter implements ExceptionFilter {

@@ -12,7 +12,7 @@ import {
 import { CreatePollDto, JoinPollDto } from './polls.dtos';
 import { ControllerAuthGuard } from './controller-auth.guard';
 import { RequestWithAuth } from './polls.types';
-import { POLLS } from 'shared';
+import { POLLS } from '../utils/poll-constants';
 
 @UsePipes(new ValidationPipe())
 @Controller(POLLS)
